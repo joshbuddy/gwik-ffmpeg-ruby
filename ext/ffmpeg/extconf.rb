@@ -1,3 +1,4 @@
+#!/usr/bin/env ruby
 # --with-ffmpeg-dir=/opt/ffmpeg
 
 require 'mkmf'
@@ -13,22 +14,28 @@ if find_executable('pkg-config')
   $LDFLAGS << ' ' + `pkg-config libswscale --libs`.strip
 end
 
+ffmpeg_ruby_headers = ["ffmpeg_utils.h", "ffmpeg.h"]
+
+ffmpeg_ruby_headers.each { |lib| have_header(lib) }
+
 ffmpeg_include, ffmpeg_lib = dir_config("ffmpeg")
 dir_config("libswscale")
 
 $CFLAGS << " -W -Wall"
 #$LDFLAGS << " -rpath #{ffmpeg_lib}"
 
-if have_library("avformat") and find_header('libavformat/avformat.h') and
-   have_library("avcodec")  and find_header('libavutil/avutil.h') and
-   have_library("avutil")   and find_header('libavcodec/avcodec.h') and
-   have_library("swscale")  and find_header('libswscale/swscale.h') then
+have_library("avformat")
+find_header('libavformat/avformat.h')
+
+have_library("avcodec")
+find_header('libavutil/avutil.h')
+
+have_library("avutil")
+find_header('libavcodec/avcodec.h')
+
+have_library("swscale")
+find_header('libswscale/swscale.h')
  
-$objs = %w(ffmpeg.o ffmpeg_format.o ffmpeg_input_format.o ffmpeg_stream.o ffmpeg_utils.o ffmpeg_frame.o ffmpeg_codec.o)
+#$objs = %w(ffmpeg.o ffmpeg_format.o ffmpeg_input_format.o ffmpeg_stream.o ffmpeg_utils.o ffmpeg_frame.o ffmpeg_codec.o)
 
-create_makefile("FFMPEG_core")
-
-else
-  STDERR.puts "missing library"
-  exit 1
-end
+create_makefile("ffmpeg/FFMPEG_core")

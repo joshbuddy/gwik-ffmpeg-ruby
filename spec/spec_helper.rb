@@ -1,6 +1,10 @@
-require File.dirname(__FILE__) + '/../ext/ffmpeg'
-include FFMPEG
+require 'simplecov'
 
-Spec::Runner.configure do |config|
-  
+SimpleCov.start do
+  add_filter "spec/"
 end
+
+require 'rspec'
+require 'rspec/mocks'
+require 'ffmpeg'
+include FFMPEG

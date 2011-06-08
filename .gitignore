@@ -5,3 +5,5 @@ spec/data
 ext/Makefile
 Makefile
 ext/mkmf.log
+coverage
+Gemfile.lock

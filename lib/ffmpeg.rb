@@ -1,11 +1,7 @@
 # Copyright (c)2008 Antonin Amand.
 # Licensed under the Ruby License. See LICENSE for details.
 #
-begin
-  require 'HFL_core'
-rescue LoadError
-  require File.dirname(__FILE__) + '/FFMPEG_core'
-end
+require 'FFMPEG_core'
 
 module FFMPEG
   
