@@ -17,9 +17,9 @@ static VALUE output_format_add_video_stream(VALUE self, VALUE codec_id_or_sym)
     
     if (SYMBOL_P(codec_id_or_sym)) {
         fprintf(stderr, "get available codecs\n");
-        // VALUE rb_h_available_codecs = rb_funcall(rb_const_get(rb_mFFMPEG, rb_intern("Codec")), rb_intern("available_codecs"), 0);
+        VALUE rb_h_available_codecs = rb_funcall(rb_const_get(rb_mFFMPEG, rb_intern("Codec")), rb_intern("available_codecs"), 0);
         
-        //VALUE rb_h_codec = rb_hash_aref(rb_h_available_codecs, codec_id_or_sym);
+        VALUE rb_h_codec = rb_hash_aref(rb_h_available_codecs, codec_id_or_sym);
         
         if (Qnil == rb_h_codec)
             rb_raise(rb_eArgError, "invalid codec symbol / codec not found in FFMPEG::Codec.available_codecs");
