@@ -18,4 +18,5 @@ Gem::Specification.new do |spec|
   spec.add_development_dependency 'simplecov', ["0.4.2"]
   spec.add_development_dependency "rspec", ["~> 2.4.0"]
   spec.add_development_dependency 'rake', ["0.8.7"]
+  spec.add_development_dependency 'rake-compiler'
 end
