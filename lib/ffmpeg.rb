@@ -1,7 +1,7 @@
 # Copyright (c)2008 Antonin Amand.
 # Licensed under the Ruby License. See LICENSE for details.
 #
-require 'FFMPEG_core'
+require 'ffmpeg/ffmpeg'
 
 module FFMPEG
   

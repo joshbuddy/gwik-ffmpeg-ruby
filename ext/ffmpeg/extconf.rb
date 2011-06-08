@@ -38,4 +38,4 @@ find_header('libswscale/swscale.h')
  
 #$objs = %w(ffmpeg.o ffmpeg_format.o ffmpeg_input_format.o ffmpeg_stream.o ffmpeg_utils.o ffmpeg_frame.o ffmpeg_codec.o)
 
-create_makefile("ffmpeg/FFMPEG_core")
+create_makefile("ffmpeg/ffmpeg")

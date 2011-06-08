@@ -7,3 +7,7 @@ Makefile
 ext/mkmf.log
 coverage
 Gemfile.lock
+.project
+.buildpath
+lib/ffmpeg/ffmpeg.so
+tmp/
