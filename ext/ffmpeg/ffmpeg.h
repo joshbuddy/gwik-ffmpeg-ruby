@@ -28,7 +28,7 @@ RUBY_EXTERN VALUE rb_cFFMPEGFrame;
 /* ERRORS */
 RUBY_EXTERN VALUE rb_eUnsupportedFormat;
 
-RUBY_EXTERN void Init_FFMPEG_core();
+RUBY_EXTERN void Init_ffmpeg();
 RUBY_EXTERN void Init_FFMPEGFormat();
 RUBY_EXTERN void Init_FFMPEGInputFormat();
 RUBY_EXTERN void Init_FFMPEGOutputFormat();

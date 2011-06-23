@@ -1,3 +1,3 @@
 module FFMPEG
-  VERSION = '0.1.0.pcting'
+  VERSION = '0.1.3pcting2'
 end

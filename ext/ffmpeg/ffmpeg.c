@@ -7,7 +7,7 @@
 VALUE rb_mFFMPEG;
 
 void
-Init_FFMPEG_core()
+Init_ffmpeg()
 {
     //fprintf(stderr, "----------------- init FFMPEG ------------------\n");
     // initialize ffmpeg

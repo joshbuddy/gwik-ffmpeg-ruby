@@ -11,3 +11,4 @@ Gemfile.lock
 .buildpath
 lib/ffmpeg/ffmpeg.so
 tmp/
+fabfile.py*
