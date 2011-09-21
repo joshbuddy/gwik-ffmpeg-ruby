@@ -5,6 +5,8 @@
 #include "ffmpeg.h"
 #include "ffmpeg_utils.h"
 
+#define MAX_STREAMS 20
+
 VALUE rb_cFFMPEGOutputFormat;
 
 static VALUE output_format_add_video_stream(VALUE self, VALUE codec_id_or_sym)
@@ -14,74 +16,74 @@ static VALUE output_format_add_video_stream(VALUE self, VALUE codec_id_or_sym)
     AVStream * stream = NULL;
     AVCodec * codec = NULL;
     unsigned int codec_id = CODEC_ID_NONE;
-    
+
     if (SYMBOL_P(codec_id_or_sym)) {
         fprintf(stderr, "get available codecs\n");
         VALUE rb_h_available_codecs = rb_funcall(rb_const_get(rb_mFFMPEG, rb_intern("Codec")), rb_intern("available_codecs"), 0);
-        
+
         VALUE rb_h_codec = rb_hash_aref(rb_h_available_codecs, codec_id_or_sym);
-        
+
         if (Qnil == rb_h_codec)
             rb_raise(rb_eArgError, "invalid codec symbol / codec not found in FFMPEG::Codec.available_codecs");
-        
+
         //if (Qfalse == rb_hash_aref(rb_h_codec, rb_sym("encoder")))
         //    rb_raise(rb_eArgError, "codec is not available for encoding purpose");
         fprintf(stderr, "codec %s : %s\n", STR2CSTR(rb_funcall(codec_id_or_sym, rb_intern("inspect"), 0)),
             STR2CSTR(rb_funcall(rb_h_codec, rb_intern("inspect"), 0)));
-        
+
 
         codec_id = NUM2INT(rb_hash_aref(rb_h_codec, rb_sym("id")));
         fprintf(stderr, "codec id : %d\n", codec_id);
     }
-    
+
     if (FIXNUM_P(codec_id_or_sym)) {
         //fprintf(stderr, "fixnum mode\n");
         codec_id = NUM2INT(codec_id_or_sym);
     }
-    
+
     if (format_context->nb_streams + 1 > MAX_STREAMS)
         rb_raise(rb_eRuntimeError, "over max stream count");
-    
+
     stream = av_new_stream(format_context, format_context->nb_streams);
-    
+
     if (!stream) {
         rb_raise(rb_eRuntimeError, "no memory");
     }
-    
+
     codec_context = stream->codec;
     codec_context->codec_id = codec_id;
-    codec_context->codec_type = CODEC_TYPE_VIDEO;
-    
+    codec_context->codec_type = AVMEDIA_TYPE_VIDEO;
+
     strcat(format_context->filename, "test");
-    
+
     // some formats want stream headers to be separate
-    if(!strcmp(format_context->oformat->name, "mp4") || 
-            !strcmp(format_context->oformat->name, "mov") || 
+    if(!strcmp(format_context->oformat->name, "mp4") ||
+            !strcmp(format_context->oformat->name, "mov") ||
             !strcmp(format_context->oformat->name, "3gp"))
         format_context->flags |= CODEC_FLAG_GLOBAL_HEADER;
-    
+
     codec = avcodec_find_encoder(codec_context->codec_id);
-    
+
     if (!codec) {
         rb_raise(rb_eRuntimeError, "codec not found");
     }
-    
-    avcodec_get_context_defaults2(codec_context, CODEC_TYPE_VIDEO);
-    
+
+    avcodec_get_context_defaults2(codec_context, AVMEDIA_TYPE_VIDEO);
+
     if (av_set_parameters(format_context, NULL) < 0) {
         // FIXME raise error
     }
-    
+
     //codec_context->bit_rate = 400000;
     //fprintf(stderr, "bitrate : %d kb/s\n", codec_context->bit_rate / 1024);
-    
+
     //codec_context->width = 320;
     //codec_context->height = 240;
-    
+
     /* resolution must be a multiple of two */
     // codec_context->width = 624;
     // codec_context->height = 352;
-    
+
     codec_context->bit_rate_tolerance = 1000000000;
     //codec_context->gop_size = 12; /* emit one intra frame every twelve frames at most */
 
@@ -102,7 +104,7 @@ static VALUE output_format_add_video_stream(VALUE self, VALUE codec_id_or_sym)
        parameters). */
     AVRational fps = (AVRational){25,1};
     codec_context->time_base = fps;
-    
+
     if(codec && codec->supported_framerates){
         const AVRational *p = codec->supported_framerates;
         const AVRational *best = NULL;
@@ -118,7 +120,7 @@ static VALUE output_format_add_video_stream(VALUE self, VALUE codec_id_or_sym)
         codec_context->time_base.den = best->den;
         codec_context->time_base.num = best->num;
     }
-    
+
     fprintf(stderr, "\ncodec name : %s, codec id : %d\n", codec->name, codec->id);
     fprintf(stderr, "codec time base : %d/%d\n", (int)codec_context->time_base.num, (int)codec_context->time_base.den);
     // open the codec
@@ -126,7 +128,7 @@ static VALUE output_format_add_video_stream(VALUE self, VALUE codec_id_or_sym)
         rb_raise(rb_eRuntimeError, "error while opening codec for encoding (%d)",
             codec_context->codec_id);
     }
-    
+
     return self;
 }
 
@@ -136,22 +138,22 @@ output_format_init(VALUE self, VALUE format_string)
     VALUE obj = rb_call_super(0, NULL);
     AVFormatContext * format_context = NULL;
     AVOutputFormat * ofmt = NULL;
-    
+
     Data_Get_Struct(obj, AVFormatContext, format_context);
-    
+
     ofmt = guess_format(StringValuePtr(format_string), NULL, NULL);
-    
+
     if (!ofmt) {
         rb_raise(rb_eRuntimeError, "Format '%s' not found or not available",
             StringValuePtr(format_string));
     }
-    
+
     format_context->oformat = ofmt;
-    
+
     return obj;
 }
 
-static void 
+static void
 free_format(AVFormatContext * format_context)
 {
     // int i;
@@ -170,7 +172,7 @@ alloc_format(VALUE klass)
     VALUE obj;
     format_context->oformat = NULL;
     format_context->iformat = NULL;
-    
+
     obj = Data_Wrap_Struct(klass, 0, free_format, format_context);
     return obj;
 }
@@ -186,16 +188,16 @@ void Init_FFMPEGOutputFormat() {
     // rb_mFFMPEG = rb_const_get(rb_cObject, rb_intern("FFMPEG"));
     // rb_cFFMPEGFormat = rb_const_get(rb_mFFMPEG, rb_intern("Format"));
     // rb_cFFMPEGOutputFormat = rb_define_class_under(rb_mFFMPEG, "OutputFormat", rb_cFFMPEGFormat);
-    // 
+    //
     // //instance methods
     // rb_define_method(rb_cFFMPEGOutputFormat, "initialize", output_format_init, 1);
     // rb_define_method(rb_cFFMPEGOutputFormat, "add_video_stream",
     //     output_format_add_video_stream, 1);
-    
+
     //AVOutputFormat * p = first_oformat;
-    
+
     // rb_available_output_formats = rb_hash_new();
-    // 
+    //
     // while(p) {
     //  VALUE rb_h_format = rb_hash_new();
     //  rb_hash_aset(rb_h_format, rb_sym("name"), rb_str_new2(p->long_name));
@@ -207,7 +209,7 @@ void Init_FFMPEGOutputFormat() {
     //  rb_hash_aset(rb_available_output_formats, rb_sym(p->name), rb_h_format);
     //  p = p->next;
     //     }
-    // 
+    //
     // rb_cv_set(rb_cFFMPEGOutputFormat, "@@available_output_formats", rb_available_output_formats);
     // rb_define_singleton_method(rb_cFFMPEGOutputFormat, "available_output_formats", output_format_available_ouput_formats, 0);
 }

@@ -53,27 +53,27 @@ VALUE codec_type_id_to_sym(int codec_type)
 {
     VALUE type_sym;
     switch(codec_type) {
-        case CODEC_TYPE_AUDIO:
+        case AVMEDIA_TYPE_AUDIO:
             type_sym = rb_sym("audio");
             break;
-        
-        case CODEC_TYPE_VIDEO:
+
+        case AVMEDIA_TYPE_VIDEO:
             type_sym = rb_sym("video");
             break;
-        
-        case CODEC_TYPE_SUBTITLE:
+
+        case AVMEDIA_TYPE_SUBTITLE:
             type_sym = rb_sym("subtitle");
             break;
-        
-        case CODEC_TYPE_DATA:
+
+        case AVMEDIA_TYPE_DATA:
             type_sym = rb_sym("data");
             break;
-        
-        case CODEC_TYPE_ATTACHMENT:
+
+        case AVMEDIA_TYPE_ATTACHMENT:
             type_sym = rb_sym("attachment");
             break;
-        
-        case CODEC_TYPE_NB:        
+
+        case AVMEDIA_TYPE_NB:
             type_sym = rb_sym("nb");
             break;
 
@@ -81,6 +81,6 @@ VALUE codec_type_id_to_sym(int codec_type)
             type_sym = rb_sym("unknown");
             break;
     }
-    
+
     return type_sym;
 }

@@ -6,6 +6,7 @@
 
 VALUE rb_mFFMPEG;
 
+// Init_FFMPEG_core()
 void
 Init_ffmpeg()
 {
