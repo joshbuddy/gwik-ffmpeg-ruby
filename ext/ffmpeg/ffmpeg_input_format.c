@@ -30,7 +30,7 @@ input_format_initialize(VALUE self, VALUE filename)
             StringValuePtr(filename));
     
     int error = av_open_input_file(&format_context, StringValuePtr(filename),
-        NULL, FFM_PACKET_SIZE, ap);
+        NULL, 0, ap);
     
     if (error < 0) {
         DATA_PTR(self) = format_context;

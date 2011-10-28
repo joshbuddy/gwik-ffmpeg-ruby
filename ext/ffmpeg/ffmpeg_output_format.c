@@ -38,9 +38,10 @@ static VALUE output_format_add_video_stream(VALUE self, VALUE codec_id_or_sym)
         //fprintf(stderr, "fixnum mode\n");
         codec_id = NUM2INT(codec_id_or_sym);
     }
-    
-    if (format_context->nb_streams + 1 > MAX_STREAMS)
-        rb_raise(rb_eRuntimeError, "over max stream count");
+
+    // in recent versions nb_streams is dynamically allocated
+    // if (format_context->nb_streams + 1 > MAX_STREAMS)
+    //     rb_raise(rb_eRuntimeError, "over max stream count");
     
     stream = av_new_stream(format_context, format_context->nb_streams);
     

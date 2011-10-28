@@ -109,13 +109,21 @@ format_has_stream_with_codec_type(VALUE self, int codec_type)
 static VALUE
 format_has_video(VALUE self)
 {
+#if LIBAVCODEC_VERSION_MAJOR < 53
     return format_has_stream_with_codec_type(self, CODEC_TYPE_VIDEO);
+#else
+    return format_has_stream_with_codec_type(self, AVMEDIA_TYPE_VIDEO);
+#endif
 }
 
 static VALUE
 format_has_audio(VALUE self)
 {
+#if LIBAVCODEC_VERSION_MAJOR < 53
     return format_has_stream_with_codec_type(self, CODEC_TYPE_AUDIO);
+#else
+    return format_has_stream_with_codec_type(self, AVMEDIA_TYPE_AUDIO);
+#endif
 }
 
 // copied from avformat util.c
